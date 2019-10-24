@@ -30,6 +30,7 @@ int __is_empty_line(SDL_surface* image, height, width)
         {
         	res = 1;
         }
+	w++;
 	}
 	return res;
 }
