@@ -30,7 +30,7 @@ int __is_empty_line(SDL_surface* image, height, width)
         {
         	res = 1;
         }
-	w++;
+        w += 1;
 	}
 	return res;
 }
@@ -61,7 +61,7 @@ void line_segmentation(SDL_surface* image)
     }
 }
 
-int __is_empty_column(SDL_surface* image, height, width)
+int __is_empty_column(SDL_surface* image, height, height_max, width)
 {
 	//***************************************//
 	//** This function detects empty lines **//
@@ -71,7 +71,7 @@ int __is_empty_column(SDL_surface* image, height, width)
     // Res[1] is the index at the end of the column
 	int res[2];
 	res[0] = 0
-	while (res[0] == 0)
+	while (res[0] == 0 && height < height_max)
 	{
 		Uint32 pixel = get_pixel(image_surface, width, height);
         Uint8 r, g, b;
@@ -108,7 +108,7 @@ void column_segmentation(SDL_surface* image)
             {
             	// Tab[0] is booléen int, 0 -> is with column, 1 -> otherwise
             	// Tab[1] is the index at the end of the column
-            	int tab[2] = __is_empty_column(image, h, w);
+            	int tab[2] = __is_empty_column(image, h, height, w);
             	if (tab[0] == 0)
             	{
             		// Changes the pixels to red
