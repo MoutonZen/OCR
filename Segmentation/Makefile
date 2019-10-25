@@ -18,8 +18,7 @@ pixel_operations.o: pixel_operations.h
 clean:
 	${RM} *.o
 	${RM} *.d
-	${RM} image_treatment
-	${RM} grayscale
-	${RM} character.txt
+	${RM} segmentation
+	${RM} main
 
 # END
