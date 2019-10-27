@@ -89,8 +89,8 @@ int main(int argc, char *argv[])
     
     wait_for_keypressed();
     column_segmentation(image_surface);
-
     update_surface(screen_surface, image_surface);
+    
     wait_for_keypressed();
 
     // RAM release

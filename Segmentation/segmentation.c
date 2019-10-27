@@ -10,7 +10,7 @@
 #include "SDL/SDL_image.h"
 #include "pixel_operations.h"
 
-int __is_empty_line(SDL_Surface* image, int height, int width)
+int __is_empty_line(SDL_Surface* image, int height, int width_max)
 {
 	//***************************************//
 	//** This function detects empty lines **//
@@ -20,7 +20,7 @@ int __is_empty_line(SDL_Surface* image, int height, int width)
 	//** returns 1 otherwise **//
 	int res = 0;
 	int w = 0;
-	while(w < width && res == 0)
+	while(w < width_max && res == 0)
 	{
 		Uint32 pixel = get_pixel(image, w, height);
         Uint8 r, g, b;
@@ -46,7 +46,7 @@ void line_segmentation(SDL_Surface* image)
     int height = image->h;
     for (int i = 0; i < height; i++)
     {
-    	if (__is_empty_line(image, i, width) == 1)
+    	if (__is_empty_line(image, i, width) == 0)
     	{
     		// Changes the pixels to red
     		for (int j = 0; j < width; j++)
@@ -55,7 +55,7 @@ void line_segmentation(SDL_Surface* image)
             	Uint8 r, g, b;
             	SDL_GetRGB(pixel, image->format, &r, &g, &b);
             	Uint32 newpixel = SDL_MapRGB(image->format, 255, 0, 0);
-            	put_pixel(image, i, j, newpixel);
+            	put_pixel(image, j, i, newpixel);
     		}
     	}
     }
@@ -96,11 +96,11 @@ void column_segmentation(SDL_Surface* image)
 	// Start of the image scan
 	int width = image->w;
     int height = image->h;
-    for (int w = 0; w < width; w++)
+    for (int j = 0; j < width; j++)
     {
-    	for (int h = 0; h < height; h++)
+    	for (int k = 0; k < height; k++)
     	{
-    		Uint32 pixel = get_pixel(image, w, h);
+    		Uint32 pixel = get_pixel(image, j, k);
             Uint8 r, g, b;
             SDL_GetRGB(pixel, image->format, &r, &g, &b);
             if (r == 255 && g == 255 && b == 255)
@@ -108,16 +108,16 @@ void column_segmentation(SDL_Surface* image)
             	// Tab[0] is booléen int, 0 -> is with column, 1 -> otherwise
             	// Tab[1] is the index at the end of the column
                 int* tab = malloc(2);
-            	__is_empty_column(image, h, height, w, tab);
+            	__is_empty_column(image, k, height, j, tab);
             	if (tab[0] == 0)
             	{
             		// Changes the pixels to red
-            		for (int i = h; i < tab[1]; i++)
+            		for (int i = k; i < tab[1]; i++)
             		{
-            			Uint32 res_pixel = get_pixel(image, w, i);
+            			Uint32 res_pixel = get_pixel(image, j, i);
             			SDL_GetRGB(res_pixel, image->format, &r, &g, &b);
             			Uint32 newpixel = SDL_MapRGB(image->format, 255, 0, 0);
-            			put_pixel(image, i, w, newpixel);
+            			put_pixel(image, j, i, newpixel);
             		}
             	}
             }
