@@ -16,6 +16,7 @@ int __is_empty_line(SDL_Surface* image, int height, int width_max)
 	//** This function detects empty lines **//
 	//***************************************//
 
+	SDL_LockSurface (image);
 	//** returns 0 if it is empty **//
 	//** returns 1 otherwise **//
 	int res = 0;
@@ -32,6 +33,7 @@ int __is_empty_line(SDL_Surface* image, int height, int width_max)
         }
         w += 1;
 	}
+	SDL_UnlockSurface(image);
 	return res;
 }
 
@@ -41,6 +43,7 @@ void line_segmentation(SDL_Surface* image)
 	//** This function switches the lines completely white to red **//
 	//**************************************************************//
 
+	SDL_LockSurface (image);
     // Start of the image scan
     int width = image->w;
     int height = image->h;
@@ -59,14 +62,16 @@ void line_segmentation(SDL_Surface* image)
     		}
     	}
     }
+    SDL_UnlockSurface(image);
 }
 
-int __is_empty_column(SDL_Surface* image, int height, int height_max, int width, int* res)
+int*__is_empty_column(SDL_Surface* image, int height, int height_max, int width, int* res)
 {
 	//***************************************//
 	//** This function detects empty lines **//
 	//***************************************//
 
+	SDL_LockSurface (image);
 	// Res[0] is booléen int, 0 -> is white column, 1 -> otherwise
     // Res[1] is the index at the end of the column
 	res[0] = 0;
@@ -83,8 +88,8 @@ int __is_empty_column(SDL_Surface* image, int height, int height_max, int width,
         height += 1;
 	}
 	res[1] = height;
-
-	return *res;
+	SDL_UnlockSurface(image);
+	return res;
 }
 
 void column_segmentation(SDL_Surface* image)
@@ -93,9 +98,15 @@ void column_segmentation(SDL_Surface* image)
 	//** This function separates the letters by red columns **//
 	//********************************************************//
 
+	SDL_LockSurface (image);
 	// Start of the image scan
 	int width = image->w;
     int height = image->h;
+
+    // Tab[0] is booléen int, 0 -> is with column, 1 -> otherwise
+    // Tab[1] is the index at the end of the column
+    int* tab = malloc(sizeof(int) *2);
+
     for (int j = 0; j < width; j++)
     {
     	for (int k = 0; k < height; k++)
@@ -105,10 +116,7 @@ void column_segmentation(SDL_Surface* image)
             SDL_GetRGB(pixel, image->format, &r, &g, &b);
             if (r == 255 && g == 255 && b == 255)
             {
-            	// Tab[0] is booléen int, 0 -> is with column, 1 -> otherwise
-            	// Tab[1] is the index at the end of the column
-                int* tab = malloc(2);
-            	__is_empty_column(image, k, height, j, tab);
+            	tab = __is_empty_column(image, k, height, j, tab);
             	if (tab[0] == 0)
             	{
             		// Changes the pixels to red
@@ -123,4 +131,7 @@ void column_segmentation(SDL_Surface* image)
             }
     	}
     }
+    free(tab);
+    SDL_UnlockSurface(image);
+
 }

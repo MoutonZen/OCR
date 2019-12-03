@@ -75,22 +75,25 @@ int main(int argc, char *argv[])
 	// SDL initialisation
 	SDL_Surface* image_surface = NULL;
     SDL_Surface* screen_surface = NULL;
-
+    printf("debug 01\n");
     init_sdl();
 
     image_surface = load_image(argv[1]);
     screen_surface = display_image(image_surface);
+    printf("debug 02\n");
 
     wait_for_keypressed();
     // Start of text segmentation
 
     line_segmentation(image_surface);
     update_surface(screen_surface, image_surface);
-    
+    printf("debug 03\n");
+
     wait_for_keypressed();
     column_segmentation(image_surface);
     update_surface(screen_surface, image_surface);
-    
+    printf("debug 04\n");
+
     wait_for_keypressed();
 
     // RAM release
