@@ -87,12 +87,16 @@ int main(int argc, char *argv[])
 
     line_segmentation(image_surface);
     update_surface(screen_surface, image_surface);
+    Uint32 pixel = get_pixel(image_surface, 0, 0);
+    Uint8 r, g, b;
     printf("debug 03\n");
 
     wait_for_keypressed();
     column_segmentation(image_surface);
     update_surface(screen_surface, image_surface);
-    printf("debug 04\n");
+    printf("debug 03\n");
+
+    SDL_GetRGB(pixel, image_surface->format, &r, &g, &b);
 
     wait_for_keypressed();
 

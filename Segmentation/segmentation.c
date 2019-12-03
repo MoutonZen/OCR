@@ -54,10 +54,11 @@ void line_segmentation(SDL_Surface* image)
     		// Changes the pixels to red
     		for (int j = 0; j < width; j++)
     		{
-    			Uint32 pixel = get_pixel(image, j, i);
             	Uint8 r, g, b;
-            	SDL_GetRGB(pixel, image->format, &r, &g, &b);
-            	Uint32 newpixel = SDL_MapRGB(image->format, 255, 0, 0);
+            	r = 255;
+            	g = 0;
+            	b = 0;
+            	Uint32 newpixel = SDL_MapRGB(image->format, r, g, b);
             	put_pixel(image, j, i, newpixel);
     		}
     	}
@@ -65,7 +66,7 @@ void line_segmentation(SDL_Surface* image)
     SDL_UnlockSurface(image);
 }
 
-int*__is_empty_column(SDL_Surface* image, int height, int height_max, int width, int* res)
+int* __is_empty_column(SDL_Surface* image, int height, int height_max, int width, int* res)
 {
 	//***************************************//
 	//** This function detects empty lines **//
@@ -75,7 +76,8 @@ int*__is_empty_column(SDL_Surface* image, int height, int height_max, int width,
 	// Res[0] is booléen int, 0 -> is white column, 1 -> otherwise
     // Res[1] is the index at the end of the column
 	res[0] = 0;
-	while (res[0] == 0 && height < height_max)
+	int tst = 1;
+	while (res[0] == 0 && height < height_max && tst)
 	{
 		Uint32 pixel = get_pixel(image, width, height);
         Uint8 r, g, b;
@@ -84,6 +86,10 @@ int*__is_empty_column(SDL_Surface* image, int height, int height_max, int width,
         if (r != 255 && g != 255 && b != 255)
         {
         	res[0] = 1;
+        }
+        if (r == 255 && g ==0 && b == 0)
+        {
+        	tst = 0;
         }
         height += 1;
 	}
@@ -99,39 +105,44 @@ void column_segmentation(SDL_Surface* image)
 	//********************************************************//
 
 	SDL_LockSurface (image);
-	// Start of the image scan
-	int width = image->w;
+    // Start of the image scan
+    int width = image->w;
     int height = image->h;
 
     // Tab[0] is booléen int, 0 -> is with column, 1 -> otherwise
     // Tab[1] is the index at the end of the column
     int* tab = malloc(sizeof(int) *2);
 
-    for (int j = 0; j < width; j++)
+    for (int i = 0; i < height; ++i)
     {
-    	for (int k = 0; k < height; k++)
-    	{
-    		Uint32 pixel = get_pixel(image, j, k);
-            Uint8 r, g, b;
-            SDL_GetRGB(pixel, image->format, &r, &g, &b);
-            if (r == 255 && g == 255 && b == 255)
+        Uint32 pixel = get_pixel(image, 0, i);
+        Uint8 r, g, b;
+        SDL_GetRGB(pixel, image->format, &r, &g, &b);
+        if (!(r==255 && g ==0 && b ==0))
+        {
+            for (int j = 0; j < width; ++j)
             {
-            	tab = __is_empty_column(image, k, height, j, tab);
-            	if (tab[0] == 0)
-            	{
-            		// Changes the pixels to red
-            		for (int i = k; i < tab[1]; i++)
-            		{
-            			Uint32 res_pixel = get_pixel(image, j, i);
-            			SDL_GetRGB(res_pixel, image->format, &r, &g, &b);
-            			Uint32 newpixel = SDL_MapRGB(image->format, 255, 0, 0);
-            			put_pixel(image, j, i, newpixel);
-            		}
-            	}
+                Uint32 pixel = get_pixel(image, j, i);
+                Uint8 r, g, b;
+                SDL_GetRGB(pixel, image->format, &r, &g, &b);
+                if (r == 255 && g == 255 && b == 255)
+                {
+                    tab = __is_empty_column(image, i, height, j, tab);
+                    if (tab[0] == 0)
+                    {
+                        // Changes the pixels to red
+                        for (int k = i; k < tab[1]; k++)
+                        {
+                            Uint32 res_pixel = get_pixel(image, j, k);
+                            SDL_GetRGB(res_pixel, image->format, &r, &g, &b);
+                            Uint32 newpixel = SDL_MapRGB(image->format, 255, 0, 0);
+                            put_pixel(image, j, k, newpixel);
+                        }
+                    }
+                }
             }
-    	}
+        }
     }
     free(tab);
     SDL_UnlockSurface(image);
-
 }
