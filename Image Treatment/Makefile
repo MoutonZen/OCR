@@ -7,19 +7,19 @@ CFLAGS= -Wall -Wextra -Werror -std=c99 -O3
 LDFLAGS=
 LDLIBS= `pkg-config --libs sdl` -lSDL_image
 
-all: image_treatment grayscale
+all: main
 
-image_treatment: pixel_operations.o image_treatment.o
-grayscale: pixel_operations.o grayscale.o
 
-grayscale.o: pixel_operations.h
+main: main.o pixel_operations.o grayscale.o
+
+grayscale.o: grayscale.h
 pixel_operations.o: pixel_operations.h
 
 clean:
 	${RM} *.o
 	${RM} *.d
 	${RM} image_treatment
-	${RM} grayscale
+	${RM} main
 	${RM} character.txt
 
 # END
