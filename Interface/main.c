@@ -1,4 +1,5 @@
 #include "GUI.h"
+#include "GUI.c"
 
 int main(int argc, char *argv[])
 {
@@ -7,7 +8,7 @@ int main(int argc, char *argv[])
     GtkBuilder* builder = gtk_builder_new();
     gtk_builder_add_from_file (builder, "GUI.glade", NULL);
 
-    GtkWidget* window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
+    GtkWidget* window = GTK_WIDGET(gtk_builder_get_object(builder, "GUI"));
     gtk_builder_connect_signals(builder, NULL);
     
     // get pointers to the two labels

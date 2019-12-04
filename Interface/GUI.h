@@ -21,7 +21,7 @@ void save_text(GtkButton *button, GtkTextBuffer *buffer);
 
 void load_images(GtkButton *button, GtkImage *image);
 
-void open_image(GtkButton *button, gpointer user_data);
+void open_image(GtkButton *button, GtkLabel *text_label);
 
 int launchOCR(GtkButton *button, GtkTextBuffer *buffer);
 
