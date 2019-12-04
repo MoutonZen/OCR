@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <err.h>
+#include <unistd.h>
 
 typedef struct Network Network;
 struct Network{
@@ -31,8 +32,13 @@ void feedforward_bis(Network n);
 
 void backPropagation(Network n, float* Inputs, float* Outputs);
 
+void network_xor_train(Network net);
+
 void network_train(Network n, float* Inputs, float* Outputs);
 float* network_evaluate(Network n, float* Inputs);
+
+void network_save(Network n, char* filename);
+Network *network_load();
 
 void free_network(Network n);
 

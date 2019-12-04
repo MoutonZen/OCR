@@ -5,7 +5,7 @@ EXEC= XOR
 SRCS= main.c network.c
 OBJS=$(SRCS:.c=.o)
 
-all:
+all: XOR
 
 XOR: $(OBJS)
 	$(CC) -o $@ $^ $(LDFLAGS)
