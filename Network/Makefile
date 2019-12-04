@@ -17,8 +17,4 @@ clean:
 	rm -rvf *~
 	rm -rvf \#*
 	rm -rvf $(OBJS)
-
-fclean: clean
 	rm -rvf $(EXEC)
-
-re: fclean $(EXEC)

@@ -92,6 +92,12 @@ int main(int argc, char *argv[])
     
     wait_for_keypressed();
 
+    separate_caractere(image_surface);
+
+    update_surface(screen_surface, image_surface);
+    
+    wait_for_keypressed();
+
     // RAM release
 	SDL_FreeSurface(image_surface);
 	SDL_FreeSurface(screen_surface);

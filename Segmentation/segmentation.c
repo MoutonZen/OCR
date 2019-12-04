@@ -146,3 +146,115 @@ void column_segmentation(SDL_Surface* image)
     free(tab);
     SDL_UnlockSurface(image);
 }
+
+void to_binary(SDL_Surface *img, int *res){
+    int height = img->h;
+    int width = img->w;
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width; ++j)
+        {
+            Uint32 pixel = get_pixel(img, j, i);
+            Uint8 r, g, b;
+            SDL_GetRGB(pixel, img->format, &r, &g, &b);
+            if(r<100){
+                res[i*width+j] = 1;
+                printf("@");
+            }
+            else{
+                res[i*width+j] = 0;
+                printf(" ");
+            }
+        }
+        printf("\n");
+    }
+}
+
+void cut_image(SDL_Surface *img, SDL_Surface *letter, int i, int j, int* res)
+{
+    for (int k = 0; i+k < res[0]; ++k)
+    {
+        for (int n = 0; j+n < res[1]; ++n)
+        {
+            Uint32 pixel = get_pixel(img, j+n, i+k);
+            put_pixel(letter, n, k, pixel);
+        }
+    }
+}
+
+void search_end(SDL_Surface* image, int i, int j, int height, int width, int *res)
+{
+    SDL_LockSurface (image);
+    int k = i;
+    for (; k < height; ++k)
+    {
+        Uint32 pixel = get_pixel(image, j, k);
+        Uint8 r, g, b;
+        SDL_GetRGB(pixel, image->format, &r, &g, &b);
+        if(r==255 && g == 0 && b == 0)
+        {
+            break;
+        }
+    }
+    res[0] = k;
+    k = j;
+    for (; k < width; ++k)
+    {
+        Uint32 pixel = get_pixel(image, k, i);
+        Uint8 r, g, b;
+        SDL_GetRGB(pixel, image->format, &r, &g, &b);
+        if(r==255 && g == 0 && b == 0)
+        {
+            break;
+        }
+    }
+    res[1] = k;
+    SDL_UnlockSurface(image);
+}
+
+SDL_Surface* resize(SDL_Surface *img, SDL_Surface *dst)
+{
+    SDL_SoftStretch(img, NULL, dst, NULL);
+    return dst; 
+}
+
+void separate_caractere(SDL_Surface* image)
+{
+    SDL_LockSurface(image);
+    int *res = malloc(2);
+    int width = image->w;
+    int height = image->h;
+    for (int i = 0; i < height; i++)
+    {
+        int tmp = i;
+        for (int j = 0; j < width; j++)
+            {
+                Uint32 pixel = get_pixel(image, j, i);
+                Uint8 r, g, b;
+                SDL_GetRGB(pixel, image->format, &r, &g, &b);
+                if(!(r==255 && g == 0 && b == 0))
+                {
+                    search_end(image, i, j, height, width, res);
+                    if (res[0]>tmp)
+                        tmp = res[0];
+                    SDL_Surface *letter = SDL_CreateRGBSurface(0, res[1]-j, res[0]-i, 32, 0, 0, 0, 0);
+                    cut_image(image,letter, i, j, res);
+                    SDL_Surface *letter_resize = SDL_CreateRGBSurface(SDL_HWSURFACE, 25, 25, letter->format->BitsPerPixel, 0, 0, 0, 0);
+                    resize(letter, letter_resize);
+                    int *binary = malloc(25*25*sizeof(int));
+                    to_binary(letter_resize, binary);
+
+                    //TODO
+
+                    SDL_FreeSurface(letter);
+                    SDL_FreeSurface(letter_resize);
+                    j = res[1]+1;
+                    tmp = res[0];
+                }
+                if(j >= width-1)
+                    i = tmp;
+            }
+    }
+    free(res);
+    SDL_UnlockSurface(image);
+}
