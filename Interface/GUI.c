@@ -1,4 +1,6 @@
 # include "GUI.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
 
 gchar *filename = "";
 char *text = "";
@@ -37,24 +39,9 @@ void load_images(GtkButton *button, GtkImage *image)
   }
   UNUSED(button);
   SDL_Surface *img = IMG_Load((char *)filename);
-  if(img->w > 400 && img->h > 200)
-  {
-	  printf("Need Resize \n");
-	  SDL_Surface *new = Resize(img, 400, 200);
-	  SDL_SaveBMP(new,"image_resize");
-	  gtk_image_set_from_file (GTK_IMAGE (image), "image_resize");
-  }
-  else
-  {
-    gtk_image_set_from_file (GTK_IMAGE (image), filename);
-  }
+  gtk_image_set_from_file (GTK_IMAGE (image), filename);
+  
 }
-
-//Colors for print
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KWHT  "\x1B[37m"
-
 
 void open_image(GtkButton *button, GtkLabel *text_label)
 {
@@ -81,59 +68,6 @@ void open_image(GtkButton *button, GtkLabel *text_label)
 	gtk_widget_destroy(dialog);
 }
 
-int launchOCR(GtkButton *button, GtkTextBuffer *buffer)
-{
-  if(strcmp(filename,"") == 0)
-  {
-    return 1;
-  }
-	UNUSED(button);
-	SDL_Init(SDL_INIT_VIDEO);
-	printf("%s \n ",filename);
-	SDL_Surface *img = IMG_Load((char *)filename);
-	display_image(img);
-
-	grayscale(img);
-	printf("Greyscale \n");
-	display_image(img);
-    wait_for_keypressed();
-	binarize(img);
-    printf("Black and white \n");
-    display_image(img);
-    wait_for_keypressed();
-	cutlines(img);
-    printf("Line Cuts\n");
-    display_image(img);
-    wait_for_keypressed();
-    int compteur = 0;
-    int cl = linenumber(img);
-    for(int i = 1; i <= cl; i++){
-        SDL_Surface *image_line = displayline(img, i);
-        cutchar(image_line);
-        int ch = charnumber(image_line);
-        for(int j = 1; j < ch; j++){
-            SDL_Surface *image_char = displaychar(image_line, j, ch);
-            Uint32 pxl;
-            Uint8 r, g, b;
-            pxl = get_pixel(image_char, 0, 0);
-            SDL_GetRGB(pxl, image_char->format, &r, &g, &b);
-            char str[12];
-            sprintf(str, "%d", compteur+=1);
-            char path[14] = "charimage/";
-            strcat(path, str);
-            SDL_SaveBMP(image_char, path);
-			display_image(image_char);
-			wait_for_keypressed();
-        }
-    }
-    buffer = buffer;
-	SDL_Quit();
-	return EXIT_SUCCESS;
-}
-
-void trainOCR()
-{
-}
 
 void create_window(int argc, char *argv[])
 {
@@ -144,7 +78,7 @@ void create_window(int argc, char *argv[])
 	gtk_init(&argc, &argv);
 	//Build from .glade
   data.builder = gtk_builder_new();
-  gtk_builder_add_from_file(data.builder, "window_main.glade", NULL);
+  gtk_builder_add_from_file(data.builder, "GUI.glade", NULL);
 	//Get main_window
 	main_window =  GTK_WIDGET(gtk_builder_get_object(data.builder,"window_main"));
   parent = main_window;
