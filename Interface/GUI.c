@@ -1,4 +1,4 @@
-# include "GUI.h"
+#include "GUI.h"
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
 
@@ -38,7 +38,7 @@ void load_images(GtkButton *button, GtkImage *image)
 	  return;
   }
   UNUSED(button);
-  SDL_Surface *img = IMG_Load((char *)filename);
+  //SDL_Surface *img = IMG_Load((char *)filename);
   gtk_image_set_from_file (GTK_IMAGE (image), filename);
   
 }
@@ -85,7 +85,7 @@ void create_window(int argc, char *argv[])
 	//Connect signals
 	gtk_builder_connect_signals(data.builder, &data);
 
-  gtk_window_set_title(GTK_WINDOW(main_window), "Trantor");
+  gtk_window_set_title(GTK_WINDOW(main_window), "NitrOCR");
   gtk_widget_show_all(main_window);
   gtk_main();
 }
@@ -93,4 +93,26 @@ void create_window(int argc, char *argv[])
 void quitOCR()
 {
 	gtk_main_quit();
+}
+
+
+int main(int argc, char *argv[])
+{
+    GtkBuilder      *builder; 
+    GtkWidget       *window;
+
+    gtk_init(&argc, &argv);
+
+    builder = gtk_builder_new();
+    gtk_builder_add_from_file (builder, "GUI.glade", NULL);
+
+    window = GTK_WIDGET(gtk_builder_get_object(builder, "window_main"));
+    gtk_builder_connect_signals(builder, NULL);
+
+    g_object_unref(builder);
+
+    gtk_widget_show(window);                
+    gtk_main();
+
+    return 0;
 }

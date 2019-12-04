@@ -20,11 +20,7 @@ void load_images(GtkButton *button, GtkImage *image);
 
 void open_image(GtkButton *button, GtkLabel *text_label);
 
-int launchOCR(GtkButton *button, GtkTextBuffer *buffer);
-
 void create_window(int argc, char *argv[]);
-
-void trainOCR();
 
 void quitOCR();
 
