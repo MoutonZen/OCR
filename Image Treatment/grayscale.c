@@ -33,3 +33,14 @@ void grayscale(SDL_Surface* image_surface)
         }
     }
 }
+
+SDL_Surface* resize(SDL_Surface *img)
+{
+	int w=200;
+	int h=200;
+	SDL_Surface *dst= SDL_CreateRGBSurface(SDL_HWSURFACE, w, h, img->format->BitsPerPixel, 0, 0, 0, 0);
+	SDL_SoftStretch(img, NULL, dst, NULL);
+	return dst; 
+	
+}
+
