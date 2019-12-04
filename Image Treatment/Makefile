@@ -10,9 +10,9 @@ LDLIBS= `pkg-config --libs sdl` -lSDL_image
 all: main
 
 
-main: main.o pixel_operations.o grayscale.o
+main: main.o pixel_operations.o image_treatment.o
 
-grayscale.o: grayscale.h
+image_treatment.o: image_treatment.h
 pixel_operations.o: pixel_operations.h
 
 clean:

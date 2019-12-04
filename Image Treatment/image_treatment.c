@@ -2,72 +2,11 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
 #include "pixel_operations.h"
-
-// TODO: Insert all the above functions.
-void init_sdl()
-{
-    // Init only the video part.
-    // If it fails, die with an error message.
-    if(SDL_Init(SDL_INIT_VIDEO) == -1)
-        errx(1,"Could not initialize SDL: %s.\n", SDL_GetError());
-}
-
-SDL_Surface* load_image(char *path)
-{
-    SDL_Surface *img;
-
-    // Load an image using SDL_image with format detection.
-    // If it fails, die with an error message.
-    img = IMG_Load(path);
-    if (!img)
-        errx(3, "can't load %s: %s", path, IMG_GetError());
-
-    return img;
-}
-SDL_Surface* display_image(SDL_Surface *img)
-{
-    SDL_Surface *screen;
-
-    // Set the window to the same size as the image
-    screen = SDL_SetVideoMode(img->w, img->h, 0, SDL_SWSURFACE|SDL_ANYFORMAT);
-    if (screen == NULL)
-    {
-        // error management
-        errx(1, "Couldn't set %dx%d video mode: %s\n",
-                img->w, img->h, SDL_GetError());
-    }
-
-    // Blit onto the screen surface
-    if(SDL_BlitSurface(img, NULL, screen, NULL) < 0)
-        warnx("BlitSurface error: %s\n", SDL_GetError());
-
-    // Update the screen
-    SDL_UpdateRect(screen, 0, 0, img->w, img->h);
-
-    // return the screen for further uses
-    return screen;
-}
+#include "image_treatment.h"
 
 
-void wait_for_keypressed()
-{
-    SDL_Event event;
 
-    // Wait for a key to be down.
-    do
-    {
-        SDL_PollEvent(&event);
-    } while(event.type != SDL_KEYDOWN);
-
-    // Wait for a key to be up.
-    do
-    {
-        SDL_PollEvent(&event);
-    } while(event.type != SDL_KEYUP);
-}
-
-
-void contrast(SDL_Surface* img) 
+void contrast(SDL_Surface* img)
 {
 	
 
@@ -94,7 +33,6 @@ void contrast(SDL_Surface* img)
 
 void greyscale(SDL_Surface *img)
 {
-
 
 	Uint8 r, g, b;
 	int width = img->w;
@@ -145,35 +83,15 @@ void blackandwhite(SDL_Surface *img)
 
 }
 
-void SDL_FreeSurface(SDL_Surface *surface);
-
-
-int main()
+void binarisation()
 {
-    init_sdl();
-    SDL_Surface* img = load_image("MyimageTreatement.jpg");
-
-    int width = img->w;
-    int height = img->h;
 	int array[625];
-
-
-    for(int i = 0; i < height; i++){
-	    for(int j = 0; j < width; j++){
-		    Uint32 pixel = get_pixel(img, i, j);
-		    Uint8 r, g, b;
-		    SDL_GetRGB(pixel, img->format, &r, &g, &b);
-		    Uint8 average = 0.3*r + 0.59*g + 0.11*b;
-		    r = g = b = average;
-			array[j*height + i] = average;
-	    }
-    }
-
 	FILE * fichier;
 	char output[] = "character.txt";
 	fichier = fopen(output, "w");
 
-	for (int a = 0; a < 625; a++) {
+	for (int a = 0; a < 625; a++) 
+	{
 		if (a % 25 == 24) {
 			fprintf(fichier, (array[a] > 120) ? " " : "@");
 			fprintf(fichier, "\n");
@@ -184,10 +102,15 @@ int main()
 		}
 
 	}
-	printf("\n");
 	fclose(fichier);
-   
-
-    
 }
 
+SDL_Surface* resize(SDL_Surface *img)
+{
+	int w=200;
+	int h=200;
+	SDL_Surface *dst= SDL_CreateRGBSurface(SDL_HWSURFACE, w, h, img->format->BitsPerPixel, 0, 0, 0, 0);
+	SDL_SoftStretch(img, NULL, dst, NULL);
+	return dst; 
+	
+}

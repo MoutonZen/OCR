@@ -2,7 +2,7 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
 #include "pixel_operations.h"
-#include "grayscale.h"
+#include "image_treatment.h"
 
 void init_sdl()
 {
@@ -78,7 +78,11 @@ int main()
 
     wait_for_keypressed();
 
-    grayscale(image_surface);
+    // Function à appeler
+    greyscale(image_surface);
+    wait_for_keypressed();
+    blackandwhite(image_surface);
+
     update_surface(screen_surface, image_surface);
     wait_for_keypressed();
 
