@@ -147,31 +147,12 @@ void column_segmentation(SDL_Surface* image)
     SDL_UnlockSurface(image);
 }
 
-void to_binary(SDL_Surface *img, int *res){
-    int height = img->h;
-    int width = img->w;
-    for (int i = 0; i < height; ++i)
-    {
-        for (int j = 0; j < width; ++j)
-        {
-            Uint32 pixel = get_pixel(img, j, i);
-            Uint8 r, g, b;
-            SDL_GetRGB(pixel, img->format, &r, &g, &b);
-            if(r<100){
-                res[i*width+j] = 1;
-                printf("@");
-            }
-            else{
-                res[i*width+j] = 0;
-                printf(" ");
-            }
-        }
-        printf("\n");
-    }
-}
 
 void cut_image(SDL_Surface *img, SDL_Surface *letter, int i, int j, int* res)
 {
+    //**********************************************//
+    //** This function copy a letter in new image **//
+    //**********************************************//
     for (int k = 0; i+k < res[0]; ++k)
     {
         for (int n = 0; j+n < res[1]; ++n)
@@ -241,11 +222,6 @@ void separate_caractere(SDL_Surface* image)
                     cut_image(image,letter, i, j, res);
                     SDL_Surface *letter_resize = SDL_CreateRGBSurface(SDL_HWSURFACE, 25, 25, letter->format->BitsPerPixel, 0, 0, 0, 0);
                     resize(letter, letter_resize);
-                    int *binary = malloc(25*25*sizeof(int));
-                    to_binary(letter_resize, binary);
-
-                    //TODO
-
                     SDL_FreeSurface(letter);
                     SDL_FreeSurface(letter_resize);
                     j = res[1]+1;

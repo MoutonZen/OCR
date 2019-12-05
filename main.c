@@ -86,20 +86,21 @@ int main(int argc, char *argv[])
 
     greyscale(image_surface);
     update_surface(screen_surface, image_surface);
-    wait_for_keypressed();
     blackandwhite(image_surface);
+
+    wait_for_keypressed();
 
     line_segmentation(image_surface);
     update_surface(screen_surface, image_surface);
 
     wait_for_keypressed();
+
     column_segmentation(image_surface);
     update_surface(screen_surface, image_surface);
     
     wait_for_keypressed();
 
     separate_caractere(image_surface);
-
     update_surface(screen_surface, image_surface);
     
     wait_for_keypressed();
