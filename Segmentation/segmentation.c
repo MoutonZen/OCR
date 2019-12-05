@@ -10,6 +10,10 @@
 #include "SDL/SDL_image.h"
 #include "pixel_operations.h"
 
+// Prototype
+void rm_wrong_space(space_list *sentinelle);
+
+
 int __is_empty_line(SDL_Surface* image, int height, int width_max)
 {
 	//***************************************//
@@ -199,38 +203,60 @@ SDL_Surface* resize(SDL_Surface *img, SDL_Surface *dst)
     return dst; 
 }
 
-void separate_caractere(SDL_Surface* image)
+int* separate_caractere(SDL_Surface* image)
 {
     SDL_LockSurface(image);
-    int *res = malloc(2);
+    int *res = malloc(sizeof(int) *2);
+    int *tab_of_space = malloc(sizeof(int)* 1);
     int width = image->w;
-    int height = image->h;
+    int height = image->h; 
+    size_t size_space = 0;
+    size_t index_of_space = 0;
     for (int i = 0; i < height; i++)
     {
         int tmp = i;
         for (int j = 0; j < width; j++)
+        {
+        	size_space += 1;
+            Uint32 pixel = get_pixel(image, j, i);
+            Uint8 r, g, b;
+            SDL_GetRGB(pixel, image->format, &r, &g, &b);
+            if(!(r==255 && g == 0 && b == 0))
             {
-                Uint32 pixel = get_pixel(image, j, i);
-                Uint8 r, g, b;
-                SDL_GetRGB(pixel, image->format, &r, &g, &b);
-                if(!(r==255 && g == 0 && b == 0))
-                {
-                    search_end(image, i, j, height, width, res);
-                    if (res[0]>tmp)
-                        tmp = res[0];
-                    SDL_Surface *letter = SDL_CreateRGBSurface(0, res[1]-j, res[0]-i, 32, 0, 0, 0, 0);
-                    cut_image(image,letter, i, j, res);
-                    SDL_Surface *letter_resize = SDL_CreateRGBSurface(SDL_HWSURFACE, 25, 25, letter->format->BitsPerPixel, 0, 0, 0, 0);
-                    resize(letter, letter_resize);
-                    SDL_FreeSurface(letter);
-                    SDL_FreeSurface(letter_resize);
-                    j = res[1]+1;
+            	tab_of_space = realloc(tab_of_space, sizeof(int)*index_of_space+10);
+            	if (size_space > 10)
+            	{
+            		tab_of_space[index_of_space] = '\n';
+            	}
+            	else if (size_space < 3)
+            	{
+            		tab_of_space[index_of_space] = '-';
+            	}
+            	else
+            	{
+            		tab_of_space[index_of_space] = ' ';
+            	}
+            	index_of_space += 1;
+            	size_space = 0;
+                search_end(image, i, j, height, width, res);
+                if (res[0]>tmp)
                     tmp = res[0];
-                }
-                if(j >= width-1)
-                    i = tmp;
+                SDL_Surface *letter = SDL_CreateRGBSurface(0, res[1]-j, res[0]-i, 32, 0, 0, 0, 0);
+                cut_image(image,letter, i, j, res);
+                SDL_Surface *letter_resize = SDL_CreateRGBSurface(SDL_HWSURFACE, 25, 25, letter->format->BitsPerPixel, 0, 0, 0, 0);
+                resize(letter, letter_resize);
+                SDL_FreeSurface(letter);
+                SDL_FreeSurface(letter_resize);
+                j = res[1]+1;
+                tmp = res[0];
             }
+            if(j >= width-1)
+                i = tmp;
+        }
     }
     free(res);
     SDL_UnlockSurface(image);
+    return tab_of_space;
 }
+
+
