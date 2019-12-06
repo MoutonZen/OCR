@@ -19,8 +19,10 @@ int* __is_empty_column(SDL_Surface* image, int height, int height_max, int width
 void line_segmentation(SDL_Surface* image);
 void column_segmentation(SDL_Surface* image);
 void search_end(SDL_Surface* image, int i, int j, int height, int width, int *res);
-int* separate_caractere(SDL_Surface* image);
 void cut_image(SDL_Surface *img, SDL_Surface *letter, int i, int j, int* res);
+SDL_Surface* resize(SDL_Surface *img, SDL_Surface *dst);
+void output_network(char *outputlist, char caratere, float *output);
+void to_binary(SDL_Surface *img, float *res);
 
 /*
 space_list* Search_space(SDL_Surface* image, int h);

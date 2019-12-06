@@ -11,7 +11,6 @@ int main(int argc, char const *argv[]) {
     int param2 = strtoul(argv[2], NULL, 10);
     if ((param1 != 1 && param1 != 0) || (param2 != 1 && param2 != 0))
         errx(2, "the arguments must be equal to 1 or 0");
-
     Network *network = network_load();
     Network net;
     if (network == NULL)
@@ -26,6 +25,7 @@ int main(int argc, char const *argv[]) {
     input[1] = param2;
     float* out = network_evaluate(net, input);
     printf("%d XOR %d --> %f\n", param1, param2, out[0]);
+    network_save(net, "save.txt");
     free_network(net);
     free(input);
     if (network == NULL)

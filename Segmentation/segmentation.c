@@ -14,6 +14,41 @@
 void rm_wrong_space(space_list *sentinelle);
 
 
+void output_network(char *outputlist, char caratere, float *output){
+    int i = 0;
+    for (; i < 52; ++i)
+    {
+        if (outputlist[i] == caratere){
+            output[i] = 1;
+        }
+        else{
+            output[i] = 0;
+        }
+    }
+}
+
+
+void to_binary(SDL_Surface *img, float *res){
+    int height = img->h;
+    int width = img->w;
+    for (int i = 0; i < height; ++i)
+    {
+        for (int j = 0; j < width; ++j)
+        {
+            Uint32 pixel = get_pixel(img, j, i);
+            Uint8 r, g, b;
+            SDL_GetRGB(pixel, img->format, &r, &g, &b);
+            if(r<100){
+                res[i*width+j] = 1;
+            }
+            else{
+                res[i*width+j] = 0;
+            }
+        }
+    }
+}
+
+
 int __is_empty_line(SDL_Surface* image, int height, int width_max)
 {
 	//***************************************//
@@ -164,7 +199,6 @@ void cut_image(SDL_Surface *img, SDL_Surface *letter, int i, int j, int* res)
             Uint32 pixel = get_pixel(img, j+n, i+k);
             put_pixel(letter, n, k, pixel);
         }
-        printf("\n");
     }
 }
 
@@ -202,62 +236,6 @@ SDL_Surface* resize(SDL_Surface *img, SDL_Surface *dst)
 {
     SDL_SoftStretch(img, NULL, dst, NULL);
     return dst; 
-}
-
-int* separate_caractere(SDL_Surface* image)
-{
-    SDL_LockSurface(image);
-    int *res = malloc(sizeof(int) *2);
-    int *tab_of_space = malloc(sizeof(int)* 1);
-    int width = image->w;
-    int height = image->h; 
-    size_t size_space = 0;
-    size_t index_of_space = 0;
-    for (int i = 0; i < height; i++)
-    {
-        int tmp = i;
-        for (int j = 0; j < width; j++)
-        {
-        	size_space += 1;
-            Uint32 pixel = get_pixel(image, j, i);
-            Uint8 r, g, b;
-            SDL_GetRGB(pixel, image->format, &r, &g, &b);
-            if(!(r==255 && g == 0 && b == 0))
-            {
-            	tab_of_space = realloc(tab_of_space, sizeof(int)*index_of_space+10);
-            	if (size_space > 10)
-            	{
-            		tab_of_space[index_of_space] = '\n';
-            	}
-            	else if (size_space < 3)
-            	{
-            		tab_of_space[index_of_space] = '-';
-            	}
-            	else
-            	{
-            		tab_of_space[index_of_space] = ' ';
-            	}
-            	index_of_space += 1;
-            	size_space = 0;
-                search_end(image, i, j, height, width, res);
-                if (res[0]>tmp)
-                    tmp = res[0];
-                SDL_Surface *letter = SDL_CreateRGBSurface(0, res[1]-j, res[0]-i, 32, 0, 0, 0, 0);
-                cut_image(image,letter, i, j, res);
-                SDL_Surface *letter_resize = SDL_CreateRGBSurface(SDL_HWSURFACE, 25, 25, letter->format->BitsPerPixel, 0, 0, 0, 0);
-                resize(letter, letter_resize);
-                SDL_FreeSurface(letter);
-                SDL_FreeSurface(letter_resize);
-                j = res[1]+1;
-                tmp = res[0];
-            }
-            if(j >= width-1)
-                i = tmp;
-        }
-    }
-    free(res);
-    SDL_UnlockSurface(image);
-    return tab_of_space;
 }
 
 

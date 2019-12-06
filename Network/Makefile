@@ -1,20 +1,16 @@
 CC=gcc
-CFLAGS=-W -Wall -Wextra -Werror -std=c99
-LDFLAGS=-lm
-EXEC= XOR
-SRCS= main.c network.c
-OBJS=$(SRCS:.c=.o)
 
-all: XOR
+CPPFLAGS= `pkg-config --cflags sdl` -MMD -g
+CFLAGS= -Wall -Wextra -Werror -std=c99 -g
+LDFLAGS= -lm
+LDLIBS= `pkg-config --libs sdl` -lSDL_image
 
-XOR: $(OBJS)
-	$(CC) -o $@ $^ $(LDFLAGS)
+all: main
 
-$(OBJS): $(SRCS)
-	$(CC) -c $? $(CFLAGS)
+main: main.o network.o $(LDFLAGS)
+
+network.o: network.h
 
 clean:
-	rm -rvf *~
-	rm -rvf \#*
-	rm -rvf $(OBJS)
-	rm -rvf $(EXEC)
+	${RM} *.o
+	${RM} *.d

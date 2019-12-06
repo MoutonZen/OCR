@@ -1,4 +1,6 @@
 #include "network.h"
+#include "SDL/SDL.h"
+#include "SDL/SDL_image.h"
 
 
 Network __initNetwork__(int Inputs, int Hiddens, int Outputs){
@@ -12,20 +14,46 @@ Network __initNetwork__(int Inputs, int Hiddens, int Outputs){
     n.biases = malloc(n.len_Biases   * sizeof(*n.biases));
     for (int i = 0; i < n.len_Weights; ++i)
     {
-        n.weights[i] = ((float)rand()/(float)(RAND_MAX));
+        n.weights[i] = -0.5 + ((float)rand()/(float)(RAND_MAX));
     }
     for (int i = 0; i < n.len_Biases; ++i)
     {
         n.biases[i] = ((float)rand()/(float)(RAND_MAX));
     }
     n.hiddens_neur = malloc(n.Hiddens * sizeof(*n.hiddens_neur));
-    n.outputs_neur = malloc(n.Outputs* sizeof(*n.outputs_neur)) + Hiddens;
+    for (int i = 0; i < n.Hiddens; ++i)
+    {
+        n.hiddens_neur[i] = 0;
+    }
+    n.outputs_neur = malloc(n.Outputs* sizeof(*n.outputs_neur));
+    for (int i = 0; i < n.Outputs; ++i)
+    {
+        n.outputs_neur[i] = 0;
+    }
     return n;
 }
 
+void wait_for_keypresse()
+{
+    SDL_Event event;
+
+    // Wait for a key to be down.
+    do
+    {
+        SDL_PollEvent(&event);
+    } while(event.type != SDL_KEYDOWN);
+
+    // Wait for a key to be up.
+    do
+    {
+        SDL_PollEvent(&event);
+    } while(event.type != SDL_KEYUP);
+}
+
+
 
 float sigmoid(float z){
-    return 1.0f / (1.0f + expf(-z));
+    return 1 / (1 + expf(-z));
 }
 
 float sigmoid_prime(float z){
@@ -35,19 +63,20 @@ float sigmoid_prime(float z){
 void feedforward(Network n, float* Inputs){
     for(int i = 0; i < n.Hiddens; i++) {
         float sum = 0;
-        for(int j = 0; j < n.Inputs; j++)
+        for(int j = 0; j < n.Inputs; j++){
             sum += Inputs[j] * n.weights[i * n.Inputs + j];
-        n.hiddens_neur[i] = sigmoid(sum + n.biases[0]);
+        }
+        n.hiddens_neur[i] = sigmoid(sum);
     }
 }
 
 void feedforward_bis(Network n){
-    float* tmp = n.weights + n.Inputs * n.Hiddens;
+    float* weights = n.weights + n.Inputs * n.Hiddens;
     for(int i = 0; i < n.Outputs; i++) {
         float sum = 0.0f;
         for(int j = 0; j < n.Hiddens; j++)
-            sum += n.hiddens_neur[j] * tmp[i * n.Hiddens + j];
-        n.outputs_neur[i] = sigmoid(sum + n.biases[1]);
+            sum += n.hiddens_neur[j] * weights[i * n.Hiddens + j];;
+        n.outputs_neur[i] = sigmoid(sum);
     }
 }
 
@@ -70,7 +99,6 @@ void backPropagation(Network n, float* Inputs, float* Outputs){
         }
     }
 }
-
 
 void network_train(Network n, float* Inputs, float* Outputs){
     feedforward(n, Inputs);
@@ -248,4 +276,33 @@ Network *network_load(){
     }
     Network *network = &n;
     return network;
+}
+
+void load_outputfile(char *output)
+{
+    char res[1];
+    do{
+        printf("Souhaitez vous charger un network?(Y/N)\n");
+        scanf("%s", res);
+    }while(res[0]!='Y' && res[0] !='y' && res[0]!='n' && res[0]!='N');
+    if(res[0] == 'N' || res[0] == 'n')
+        return;
+    char* filename = unknow_string_length("Ou se trouve le fichier à charger?");
+    while(access(filename, F_OK ) == -1){
+        printf("Ce fichier n'existe pas.\n");
+        filename = unknow_string_length("Ou se trouve le fichier à charger?");
+    }
+    FILE *file;
+    file = fopen(filename,"r");
+    char ch[1];
+    int tmp = fscanf(file, "%c", ch);
+    output[0] = ch[0];
+    int i = 1;
+    while(tmp==1)
+    {
+        tmp = fscanf(file, "%c", ch);
+        if (tmp ==1)
+            output[i] = ch[0];
+        i++;
+    }
 }

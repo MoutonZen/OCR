@@ -39,6 +39,7 @@ float* network_evaluate(Network n, float* Inputs);
 
 void network_save(Network n, char* filename);
 Network *network_load();
+void load_outputfile(char *output);
 
 void free_network(Network n);
 

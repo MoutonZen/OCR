@@ -3,15 +3,17 @@
 CC=gcc
 
 CPPFLAGS= `pkg-config --cflags sdl` -MMD
-CFLAGS= -Wall -Wextra -Werror -std=c99 -O3
-LDFLAGS=
+CFLAGS= -Wall -Wextra -Werror -std=c99 -O3 -flto
+LDFLAGS= -lm
 LDLIBS= `pkg-config --libs sdl` -lSDL_image
 
 all: main
 
 
-main: main.o Segmentation/pixel_operations.o Segmentation/segmentation.o Image_Treatment/image_treatment.o
+main: main.o Segmentation/pixel_operations.o Segmentation/segmentation.o Image_Treatment/image_treatment.o Network/network.o Build_txt/Build_txt.o $(LDFLAGS)
 
+Build_txt.o: Build_txt.h
+network.o: network.h
 image_treatment.o: image_treatment.h
 segmentation.o: segmentation.h
 pixel_operations.o: pixel_operations.h
