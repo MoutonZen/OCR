@@ -27,8 +27,18 @@ clean:
 	${RM} Image_Treatment/*.d
 	${RM} Image_Treatment/*.o
 	${RM} Image_Treatment/main
+
+clean_all:
+	${RM} *.o
+	${RM} *.d
+	${RM} Segmentation/*.d
+	${RM} Segmentation/*.o
+	${RM} Segmentation/main
+	${RM} Image_Treatment/*.d
+	${RM} Image_Treatment/*.o
+	${RM} Image_Treatment/main
 	${RM} image_treatment
 	${RM} segmentation
 	${RM} main
-
+	
 # END
