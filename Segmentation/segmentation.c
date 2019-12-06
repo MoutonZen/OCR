@@ -164,6 +164,7 @@ void cut_image(SDL_Surface *img, SDL_Surface *letter, int i, int j, int* res)
             Uint32 pixel = get_pixel(img, j+n, i+k);
             put_pixel(letter, n, k, pixel);
         }
+        printf("\n");
     }
 }
 

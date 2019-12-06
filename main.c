@@ -4,6 +4,7 @@
 #include "SDL/SDL.h"
 #include "SDL/SDL_image.h"
 #include "Image_Treatment/image_treatment.h"
+#include "Build_txt/Build_txt.h"
 
 void init_sdl()
 {
@@ -100,9 +101,13 @@ int main(int argc, char *argv[])
     
     wait_for_keypressed();
 
-    separate_caractere(image_surface);
+    int *spaces_tab = separate_caractere(image_surface);
     update_surface(screen_surface, image_surface);
     
+    wait_for_keypressed();
+
+    Build_txt(spaces_tab, char_tab);
+
     wait_for_keypressed();
 
 
